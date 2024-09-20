@@ -2,56 +2,74 @@
 import java.time.LocalDate;
 import java.util.LinkedList;
 
-public class Paciente {
+import javax.swing.JOptionPane;
+
+public class Paciente extends Usuario implements Menu {
+	private static int incremental;
 	private String nombre;
 	private String apellido;
-	private LocalDate fecha_nacimiento;
+	private LocalDate fechaNacimieto;
 	private LinkedList<RegistroMedico> historialMedico;
 	
-	public Paciente(String nombre, String apellido, LocalDate fecha_nacimiento,
-			LinkedList<RegistroMedico> historialMedico) {
-		super();
+	public Paciente(String mail, String contrasena, String rol) {
+		super(mail, contrasena, rol);
+		incremental++;
 		this.nombre = nombre;
 		this.apellido = apellido;
-		this.fecha_nacimiento = fecha_nacimiento;
-		this.historialMedico = historialMedico;
+		this.fechaNacimieto = fechaNacimieto;
+		this.historialMedico = historialMedico;	
 	}
-
-	public String getNombre() {
-		return nombre;
-	}
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-	public String getApellido() {
-		return apellido;
-	}
-	public void setApellido(String apellido) {
-		this.apellido = apellido;
-	}
-	public LocalDate getFecha_nacimiento() {
-		return fecha_nacimiento;
-	}
-	public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
-		this.fecha_nacimiento = fecha_nacimiento;
-	}
-	public LinkedList<RegistroMedico> getHistorialMedico() {
-		return historialMedico;
-	}
-	public void setHistorialMedico(LinkedList<RegistroMedico> historialMedico) {
-		this.historialMedico = historialMedico;
+	
+	
+	@Override
+	public void menu() {
+		JOptionPane.showMessageDialog(null, "Menu paciente");
 	}
 
 	@Override
-	public String toString() {
-		return "Paciente [nombre=" + nombre + ", apellido=" + apellido + ", fecha_nacimiento=" + fecha_nacimiento
-				+ ", historialMedico=" + historialMedico + "]";
+	public void menuPrincipal() {
+		JOptionPane.showMessageDialog(null, "Menu paciente desde interface");
+		
+		
+		
+		String[] opcionoesGenerales = {
+				"Ver turnos","Sacar turno","Ver perfil médico","Salir"
+		};
+
+		String[] opcionoesTurnos= {
+				"Ver turnos anteriores","Ver turnos proximos","Filtrar","Salir"
+		};
+		  
+		
+		int elegido = JOptionPane.showOptionDialog(null, "Opciones generales", "", 0, 0, null, opcionoesGenerales, opcionoesGenerales[0]);
+		
+		
+		switch (elegido) {
+		case 0:
+			
+			elegido = JOptionPane.showOptionDialog(null, "", "", 0, 0, null, opcionoesTurnos, opcionoesTurnos[0]);
+			
+			//Opciones relacionadas con ver turno
+			
+			
+			break;
+		case 1:
+			
+			//Sacar turno
+			
+			
+			break;
+		}
+			
+			
+
+
+
+
+
+
+
+
 	}
-	
-	
-	
-	
-	
-	
+
 }
-                           

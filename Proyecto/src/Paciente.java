@@ -10,7 +10,7 @@ public class Paciente extends Usuario implements Menu {
 	private String apellido;
 	private LocalDate fechaNacimieto;
 	private LinkedList<RegistroMedico> historialMedico;
-	
+
 	public Paciente(String mail, String contrasena, String rol) {
 		super(mail, contrasena, rol);
 		incremental++;
@@ -19,8 +19,8 @@ public class Paciente extends Usuario implements Menu {
 		this.fechaNacimieto = fechaNacimieto;
 		this.historialMedico = historialMedico;	
 	}
-	
-	
+
+
 	@Override
 	public void menu() {
 		JOptionPane.showMessageDialog(null, "Menu paciente");
@@ -29,39 +29,67 @@ public class Paciente extends Usuario implements Menu {
 	@Override
 	public void menuPrincipal() {
 		JOptionPane.showMessageDialog(null, "Menu paciente desde interface");
-		
-		
-		
+
+
+
 		String[] opcionoesGenerales = {
-				"Ver turnos","Sacar turno","Ver perfil médico","Salir"
+				"Ver turnos","Mis medicos","Mis recetas","Datos personales", "Salir",
 		};
 
-		String[] opcionoesTurnos= {
-				"Ver turnos anteriores","Ver turnos proximos","Filtrar","Salir"
-		};
-		  
-		
-		int elegido = JOptionPane.showOptionDialog(null, "Opciones generales", "", 0, 0, null, opcionoesGenerales, opcionoesGenerales[0]);
-		
-		
-		switch (elegido) {
-		case 0:
-			
-			elegido = JOptionPane.showOptionDialog(null, "", "", 0, 0, null, opcionoesTurnos, opcionoesTurnos[0]);
-			
-			//Opciones relacionadas con ver turno
-			
-			
-			break;
-		case 1:
-			
-			//Sacar turno
-			
-			
-			break;
-		}
-			
-			
+		int opcion=0;
+		do {
+			opcion= JOptionPane.showOptionDialog(null, "Opciones generales", "A", 0, 0
+					, null, opcionoesGenerales, opcionoesGenerales[0]);
+			switch (opcion) {
+			case 0:
+				//Ver turnos
+				String[] opcionoesTurnos= {
+						"Sacar turno","Ver turnos anteriores","Ver turnos proximos","Cancelar turno","Turnos disponibles","Salir"
+				};
+				int opcionTurno=0;
+				do {
+					opcionTurno = JOptionPane.showOptionDialog(null, "Opciones turnos", "", 0, 0
+							, null, opcionoesTurnos, opcionoesTurnos[0]);
+					switch (opcionTurno) {
+					case 0:
+						//Sacar turno
+						break;
+					case 1:
+						//Ver turnos anteriores
+						break;
+					case 2:
+						//Ver turnos proximos
+						break;
+					case 3:
+						//Cancelar turno
+					case 4:
+						//Turnos disponibles
+						break;
+					case 5:
+						
+						JOptionPane.showMessageDialog(null, "Salir");
+						break;
+					default:
+						break;
+					}
+				} while (opcionTurno!=5);	
+
+
+
+				break;
+			case 1:
+
+				break;
+			default:	
+
+				break;
+			}
+
+		} while (opcion!=4);
+
+
+
+
 
 
 

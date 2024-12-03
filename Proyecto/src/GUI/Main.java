@@ -1,12 +1,19 @@
 package GUI;
 import java.util.LinkedList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+
+import BLL.Admin;
+import BLL.Cuenta;
+import BLL.Medico;
+import BLL.Paciente;
+import BLL.Usuario;
+
 
 public class Main {
 
 	public static void main(String[] args) {
-
 
 		String[] opcionUsuario = {"Iniciar sesión",
 				"Registrarse",
@@ -14,7 +21,9 @@ public class Main {
 		int opcionMenu =0 ;
 		do {
 
-			opcionMenu= JOptionPane.showOptionDialog(null, "Que desea realizar hoy", null, 0, 0, null, opcionUsuario, opcionUsuario[0]);
+			opcionMenu= JOptionPane.showOptionDialog(null, "Que desea realizar hoy", "Bienvenido", 0, JOptionPane.DEFAULT_OPTION, new ImageIcon(Main.class.getResource("/img/healthhub.jpg")), opcionUsuario, opcionUsuario[0]);
+		
+
 			switch (opcionMenu) {
 			case 0:
 				String nombre="";
@@ -24,10 +33,10 @@ public class Main {
 						JOptionPane.showMessageDialog(null, "Incorrecto");
 					}
 				}
-				String contrara="";
-				while (contrara.isEmpty()) {
-					contrara = JOptionPane.showInputDialog("Ingrese contrareña");
-					if (contrara.isEmpty()) {
+				String contra="";
+				while (contra.isEmpty()) {
+					contra = JOptionPane.showInputDialog("Ingrese contraseña");
+					if (contra.isEmpty()) {
 						JOptionPane.showMessageDialog(null, "Incorrecto");
 					}
 				}
@@ -36,20 +45,21 @@ public class Main {
 
 				if(encontrado!=null) {
 					JOptionPane.showMessageDialog(null, encontrado);
-					if (encontrado.getRol() == "Admin") {
-						JOptionPane.showMessageDialog(null, "Yendo al menú admin");
-					} else if (encontrado.getRol() == "Paciente") {
+					if (encontrado.getRol().equals("admin")) {
+						
+						Admin nuevo = new Admin(encontrado.getNombre(),encontrado.getPassword(),encontrado.getRol());
+						nuevo.menuPrincipal();
+						
+					} else if (encontrado.getRol().equals("paciente")) {
 
-						Paciente nuevo = new Paciente(encontrado.getnombre(),encontrado.getcontrarasena(),encontrado.getRol());
+						Paciente nuevo = new Paciente(encontrado.getId(),encontrado.getNombre(),encontrado.getPassword(),encontrado.getRol());
 						nuevo.menuPrincipal();
 
 					} else if (encontrado.getRol().equals("medico")) {
 
-						Medico nuevo = new Medico(encontrado.getnombre(),encontrado.getcontrarasena(),encontrado.getRol());
+						Medico nuevo = new Medico(encontrado.getId(),encontrado.getNombre(),encontrado.getPassword(),encontrado.getRol());
 						nuevo.menuPrincipal();	
 					}
-
-
 
 
 				}else {
@@ -59,10 +69,30 @@ public class Main {
 				break;
 			case 1: 
 				//Registrarse 
-				nombre = JOptionPane.showInputDialog("Ingrese nombre");
-				contra = JOptionPane.showInputDialog("Ingrese contraraseña");
+				nombre = "";
+                while (nombre.isEmpty()) {
+                    nombre = JOptionPane.showInputDialog("Ingrese nombre");
+                    if (nombre.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Incorrecto");
+                    }
+                }
+                contra = "";
+                while (contra.isEmpty()) {
+                	contra = JOptionPane.showInputDialog("Ingrese contraseña");
+                    if (contra.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Incorrecto");
+                    }
+                }
 
-				ListaUsuarios.getInstance().add(new Usuario(nombre,contra));
+                String mail = "";
+                while (mail.isEmpty()) {
+                    mail = JOptionPane.showInputDialog("Ingrese correo");
+                    if (mail.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Incorrecto");
+                    }
+                }
+                Cuenta nueva2 = Usuario.Register(nombre, contra, mail);
+                JOptionPane.showMessageDialog(null, nueva2);
 				break;
 			case 2: 
 				JOptionPane.showMessageDialog(null, "Salir");

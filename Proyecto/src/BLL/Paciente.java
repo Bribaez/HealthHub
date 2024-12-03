@@ -1,29 +1,41 @@
 package BLL;
 
-
+import java.sql.Time;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-public class Paciente extends Usuario implements Menu {
-	private static int incremental;
-	private String nombre;
-	private String apellido;
-	private LocalDate fechaNacimieto;
-	private LinkedList<RegistroMedico> historialMedico;
+import DLL.ControllerTurno;
+import DLL.ControllerUsuario;
+import GUI.Main;
 
-	public Paciente(String mail, String contrasena, String rol) {
-		super(mail, contrasena, rol);
-		incremental++;
-		this.nombre = nombre;
-		this.apellido = apellido;
-		this.fechaNacimieto = fechaNacimieto;
-		this.historialMedico = historialMedico;	
+public class Paciente extends Usuario implements Menu {
+    private static int incremental;
+    private String nombre;
+    private String apellido;
+    private LinkedList<RegistroMedico> historialMedico;
+    private LocalDate fechaNacimiento;
+
+    public Paciente(int id, String nombre, String password, String rol) {
+        super(nombre, password, rol, id);
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.fechaNacimiento = LocalDate.now();
+    }
+
+    public Paciente() {
+		// TODO Auto-generated constructor stub
 	}
 
+	public LocalDate getFechaNacimiento() {
+        return this.fechaNacimiento;
+    }
 
-	@Override
+    public String getApellido() {
+        return this.apellido; 
+    }
 	public void menu() {
 		JOptionPane.showMessageDialog(null, "Menu paciente");
 	}
@@ -32,74 +44,160 @@ public class Paciente extends Usuario implements Menu {
 	public void menuPrincipal() {
 		JOptionPane.showMessageDialog(null, "Menu paciente desde interface");
 
-
-
-		String[] opcionoesGenerales = {
-				"Ver turnos","Mis medicos","Mis recetas","Datos personales", "Salir",
+		String[] opciones = {
+				"Ver turnos", "Sacar turno", "Mis médicos", "Datos personales", "Salir"
 		};
 
-		int opcion=0;
+		int opcion = 0;
 		do {
-			opcion= JOptionPane.showOptionDialog(null, "Opciones generales", "A", 0, 0
-					, null, opcionoesGenerales, opcionoesGenerales[0]);
+			opcion = JOptionPane.showOptionDialog(null, "Opciones generales", "Menu Paciente", 0, JOptionPane.DEFAULT_OPTION,
+					new ImageIcon(Main.class.getResource("/img/paciente.jpg")), opciones, opciones[0]);
+
 			switch (opcion) {
 			case 0:
-				//Ver turnos
-				String[] opcionoesTurnos= {
-						"Sacar turno","Ver turnos anteriores","Ver turnos proximos","Cancelar turno","Turnos disponibles","Salir"
-				};
-				int opcionTurno=0;
-				do {
-					opcionTurno = JOptionPane.showOptionDialog(null, "Opciones turnos", "", 0, 0
-							, null, opcionoesTurnos, opcionoesTurnos[0]);
-					switch (opcionTurno) {
-					case 0:
-						//Sacar turno
-						break;
-					case 1:
-						//Ver turnos anteriores
-						break;
-					case 2:
-						//Ver turnos proximos
-						break;
-					case 3:
-						//Cancelar turno
-					case 4:
-						//Turnos disponibles
-						break;
-					case 5:
-						
-						JOptionPane.showMessageDialog(null, "Salir");
-						break;
-					default:
-						break;
+				// Ver turnos
+				System.out.println("ID del paciente: " + this.getId());
+
+				LinkedList<Turno> turnos = ControllerTurno.MostrarTurnosPorPaciente(this.getId());
+				if (turnos.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "No tienes turnos registrados.");
+				} else {
+					StringBuilder sb = new StringBuilder("Tus turnos:\n");
+					for (Turno turno : turnos) {
+						sb.append("Fecha: " + turno.getFecha() + " Hora: " + turno.getHora() + " Estado: " + turno.getEstado() + "\n");
 					}
-				} while (opcionTurno!=5);	
-
-
-
+					JOptionPane.showMessageDialog(null, sb.toString());
+				}
 				break;
 			case 1:
+				// Sacar turno
+				// Obtener todos los usuarios
+				LinkedList<Usuario> medicos = ControllerUsuario.MostrarUsuarios();
+				LinkedList<Usuario> medicosDisponibles = new LinkedList<>();
+
+				// Filtrar los usuarios con rol de médico
+				for (Usuario medico : medicos) {
+				    if (medico.getRol().equalsIgnoreCase("medico")) {
+				        medicosDisponibles.add(medico);
+				    }
+				}
+
+				// Verifica si hay médicos disponibles antes de mostrar el diálogo
+				if (medicosDisponibles.isEmpty()) {
+				    JOptionPane.showMessageDialog(null, "No hay médicos disponibles en este momento.");
+				} else {
+				    // Crear el arreglo de opciones para el diálogo
+				    String[] opcionesMedicos = new String[medicosDisponibles.size()];
+				    for (int i = 0; i < medicosDisponibles.size(); i++) {
+				        opcionesMedicos[i] = medicosDisponibles.get(i).getNombre();
+				    }
+
+				    // Mostrar el diálogo para seleccionar médico
+				    String medicoSeleccionado = (String) JOptionPane.showInputDialog(
+				        null, 
+				        "Selecciona un médico:", 
+				        "Médico", 
+				        JOptionPane.PLAIN_MESSAGE, 
+				        null, 
+				        opcionesMedicos, 
+				        opcionesMedicos[0]
+				    );
+
+				    // Validar selección
+				    if (medicoSeleccionado != null && !medicoSeleccionado.trim().isEmpty()) {
+				        JOptionPane.showMessageDialog(null, "Médico seleccionado: " + medicoSeleccionado);
+
+				        // Solicitar fecha del turno
+				        String fechaString = JOptionPane.showInputDialog("Ingrese la fecha del turno (YYYY-MM-DD):");
+				        LocalDate fecha = null;
+				        try {
+				            fecha = LocalDate.parse(fechaString);
+				        } catch (Exception e) {
+				            JOptionPane.showMessageDialog(null, "Fecha inválida. Por favor, ingrese en formato YYYY-MM-DD.");
+				            return;
+				        }
+
+				        // Solicitar hora del turno
+				        String horaString = JOptionPane.showInputDialog("Ingrese la hora del turno (HH:MM):");
+				        Time hora = null;
+				        try {
+				            hora = Time.valueOf(horaString + ":00");
+				        } catch (Exception e) {
+				            JOptionPane.showMessageDialog(null, "Hora inválida. Por favor, ingrese en formato HH:MM.");
+				            return;
+				        }
+
+
+				        Usuario medico = medicosDisponibles.stream()
+				            .filter(m -> m.getNombre().trim().equalsIgnoreCase(medicoSeleccionado.trim()))
+				            .findFirst()
+				            .orElse(null);
+
+				        if (medico != null) {
+				            // Crear el turno
+				            Turno nuevoTurno = new Turno(
+				                (long) this.getId(),  
+				                (int) medico.getId(),  
+				                opcion,                
+				                fecha,                 
+				                hora,                
+				                "pendiente",           
+				                "Consulta general"     
+				            );
+
+				            long exito = ControllerTurno.agregarTurno(nuevoTurno);
+
+				            if (exito > 0) {
+				                JOptionPane.showMessageDialog(null, "Turno creado exitosamente con ID: " + exito);
+				            } else {
+				                JOptionPane.showMessageDialog(null, "No se pudo crear el turno.");
+				            }
+				        } else {
+				            JOptionPane.showMessageDialog(null, "Médico no encontrado.");
+				        }
+				    } else {
+				        JOptionPane.showMessageDialog(null, "No seleccionaste un médico válido.");
+				    }
+				}
+
 
 				break;
-			default:	
-
+			case 2:
+				// Mis médicos
+				LinkedList<Turno> turnosPorPaciente = ControllerTurno.MostrarTurnosPorPaciente(this.getId());
+				if (turnosPorPaciente.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "No tenes médicos registrados.");
+				} else {
+					StringBuilder sbMedicos = new StringBuilder("Tus médicos:\n");
+					for (Turno turno : turnosPorPaciente) {
+						Usuario medicoDeTurno = ControllerUsuario.BuscarUsuario(turno.getMedicoId());
+						sbMedicos.append(medicoDeTurno.getNombre() + "\n");
+					}
+					JOptionPane.showMessageDialog(null, sbMedicos.toString());
+				}
+				break;
+			case 3:
+				// Datos personales
+				String datos = "Nombre: " + this.getNombre() + "\n";
+				datos += "Apellido: " + this.getApellido() + "\n";  
+				datos += "Fecha de Nacimiento: " + this.getFechaNacimiento() + "\n";
+				JOptionPane.showMessageDialog(null, datos);
+				break;
+			case 4: 
+				JOptionPane.showMessageDialog(null, "Finalizar");
+				break;
+			default:
 				break;
 			}
 
-		} while (opcion!=4);
-
-
-
-
-
-
-
-
-
-
-
-
+		} while (opcion != 4); 
 	}
+
+
+
+
+
+
+
 
 }

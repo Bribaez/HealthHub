@@ -3,7 +3,7 @@ import java.util.LinkedList;
 
 public class RegistroMedico {
 	private LocalDate fecha;
-	String descripcion;
+	private String descripcion;
 	private LinkedList<Medico> medico;
 	private String tratamiiento;
 	
